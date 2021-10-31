@@ -2,6 +2,8 @@
 
 This is a very simple plugin to help with picking an open window.
 
+![Animated GIF demonstrating winpick](https://i.imgur.com/nyktLZI.gif)
+
 ## Usage
 ```lua
 local winpick = require("winpick")
