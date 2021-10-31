@@ -1,5 +1,9 @@
 local api = vim.api
 
+local options = {
+	border = "none",
+}
+
 local M = {}
 
 local function clear_cues(cue_winids)
@@ -34,7 +38,7 @@ local function render_cues(winids)
 			col = math.floor(api.nvim_win_get_width(winid) / 2 - width / 2),
 			row = math.floor(api.nvim_win_get_height(winid) / 2 - height / 2),
 			style = "minimal",
-			border = "none",
+			border = options.border,
 		})
 
 		table.insert(floats, float_winid)
@@ -127,6 +131,11 @@ function M.pick_window()
 	end
 
 	return focus_win(winid)
+end
+
+-- Overrides default options.
+function M.setup(opts)
+	options = vim.tbl_extend("force", options, opts or {})
 end
 
 return M
