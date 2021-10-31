@@ -37,6 +37,7 @@ local function render_cues(winids)
 			height = height,
 			col = math.floor(api.nvim_win_get_width(winid) / 2 - width / 2),
 			row = math.floor(api.nvim_win_get_height(winid) / 2 - height / 2),
+			focusable = false,
 			style = "minimal",
 			border = options.border,
 		})
