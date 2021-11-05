@@ -83,23 +83,9 @@ function M.pick_window()
 	local winids = api.nvim_tabpage_list_wins(0)
 	local recipient_winids
 
-	-- Let's filter unlisted windows and, in case there is at least one listed window left for us to
-	-- use as a recipient, we pick the filtered list, otherwise, we keep using unlisted windows.
-	recipient_winids = vim.tbl_filter(function(winid)
-		local bufnr = api.nvim_win_get_buf(winid)
-		local buflisted = api.nvim_buf_get_option(bufnr, "buflisted")
-
-		return buflisted
-	end, winids)
-
-	if #recipient_winids == 0 then
-		recipient_winids = winids
-	end
-
 	-- Let's filter windows that shouldn't be used as recipients because of their specific types
 	-- and, in case there is at least one listed window left for us to use as a recipient, we pick
 	-- the filtered list, otherwise, we keep using unlisted windows.
-	winids = recipient_winids
 	recipient_winids = vim.tbl_filter(function(winid)
 		local bufnr = api.nvim_win_get_buf(winid)
 		local buftype = api.nvim_buf_get_option(bufnr, "buftype")
