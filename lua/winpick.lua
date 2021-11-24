@@ -58,11 +58,11 @@ end
 
 local function prompt_for_ascii_code()
 	vim.cmd("mode")
-	print("Pick a window: ")
 	while true do
+		print("Pick a window: ")
 		local ok, choice = pcall(vim.fn.getchar)
+		vim.cmd("mode")
 		if not ok or tonumber(choice) == 27 then -- handle Ctrl-C and Esc
-			vim.cmd("mode")
 			return
 		end
 
