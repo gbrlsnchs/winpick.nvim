@@ -15,6 +15,8 @@ end
 
 ### Custom options
 - `border`: Border style passed to `nvim_open_win`, defaults to `"none"`
+- `denylist`: Set of buftypes that should be avoided if possible, defaults to avoiding `quickfix`
+  buffers
 
 #### Example
 ```lua
@@ -23,5 +25,8 @@ local winpick = require("winpick")
 -- These are the default options.
 winpick.setup({
 	border = "none",
+	denylist = {
+		quickfix = true,
+	},
 })
 ```

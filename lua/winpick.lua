@@ -2,6 +2,9 @@ local api = vim.api
 
 local options = {
 	border = "none",
+	denylist = {
+		quickfix = true,
+	},
 }
 
 local M = {}
@@ -89,8 +92,9 @@ function M.pick_window()
 	recipient_winids = vim.tbl_filter(function(winid)
 		local bufnr = api.nvim_win_get_buf(winid)
 		local buftype = api.nvim_buf_get_option(bufnr, "buftype")
+		local denylist = options.denylist or {}
 
-		return buftype == "" or buftype == "terminal"
+		return not denylist[buftype]
 	end, winids)
 
 	if #recipient_winids == 0 then
