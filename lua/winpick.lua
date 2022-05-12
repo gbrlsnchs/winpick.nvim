@@ -1,132 +1,106 @@
+local internal = require("winpick.internal")
+
 local api = vim.api
 
-local options = {
-	border = "none",
-	denylist = {
-		quickfix = true,
-	},
-}
+local ESC_CODE = 27
+
+local defaults = internal.defaults
 
 local M = {}
 
-local function clear_cues(cue_winids)
-	for _, winid in pairs(cue_winids) do
-		-- We use pcall here because we dont' want to throw an error just
-		-- because we couldn't close a window that was probably already closed!
-		pcall(api.nvim_win_close, winid, true)
-	end
-end
+--- Prompts for a window to be selected. A callback is used for handling the action. The default
+--- action is to focus the selected window. The argument passed to the callback is a window ID if a
+--- window is selected or nil if it the selection is aborted.
+--- @param opts table: Optional options that may override global options.
+--- @return number: Window ID of the selected window.
+function M.select(opts)
+	opts = vim.tbl_deep_extend("force", defaults, opts or {})
 
-local function render_cues(winids)
-	-- Reset view.
-	local result = {}
-	local floats = {}
-	for idx, winid in ipairs(winids) do
-		local ascii_code = idx + 64 -- A, B, C, ...
-		local bufnr = api.nvim_create_buf(false, true)
+	local wins = api.nvim_tabpage_list_wins(0)
 
-		api.nvim_buf_set_lines(bufnr, 0, -1, false, {
-			"         ",
-			("    %s    "):format(vim.fn.nr2char(ascii_code)),
-			"         ",
-		})
+	-- Filter out some buffers according to configuration.
+	local eligible_wins = vim.tbl_filter(function(win)
+		local win_excludes = opts.win_excludes or {}
 
-		local width = 9
-		local height = 3
-		local float_winid = api.nvim_open_win(bufnr, false, {
-			relative = "win",
-			win = winid,
-			width = width,
-			height = height,
-			col = math.floor(api.nvim_win_get_width(winid) / 2 - width / 2),
-			row = math.floor(api.nvim_win_get_height(winid) / 2 - height / 2),
-			focusable = false,
-			style = "minimal",
-			border = options.border,
-		})
+		for opt_name, value in pairs(win_excludes) do
+			local option = api.nvim_win_get_option(win, opt_name)
+			local exclude = (vim.tbl_islist(value) and value) or { value }
 
-		table.insert(floats, float_winid)
-		result[ascii_code] = winid
-	end
-
-	vim.cmd("redraw")
-	return result, floats
-end
-
-local function focus_win(winid)
-	-- TODO: Handle silent error.
-	local ok = pcall(api.nvim_set_current_win, winid)
-	return ok
-end
-
-local function prompt_for_ascii_code()
-	vim.cmd("mode")
-	while true do
-		print("Pick a window: ")
-		local ok, choice = pcall(vim.fn.getchar)
-		vim.cmd("mode")
-		if not ok or tonumber(choice) == 27 then -- handle Ctrl-C and Esc
-			return
+			if vim.tbl_contains(exclude, option) then
+				return false
+			end
 		end
 
-		choice = vim.fn.nr2char(choice):upper()
 
-		return vim.fn.char2nr(choice)
+		local buf_excludes = opts.buf_excludes or {}
+		local bufnr = api.nvim_win_get_buf(win)
+
+		for opt_name, value in pairs(buf_excludes) do
+			local option = api.nvim_buf_get_option(bufnr, opt_name)
+			local exclude = (vim.tbl_islist(value) and value) or { value }
+
+			if vim.tbl_contains(exclude, option) then
+				return false
+			end
+		end
+
+		return true
+	end, wins)
+
+	if #eligible_wins == 0 then
+		eligible_wins = wins
 	end
+
+	if #eligible_wins == 1 then
+		return eligible_wins[1]
+	end
+
+	local targets = {}
+
+	for idx, win in ipairs(eligible_wins) do
+		targets[internal.format_index(idx)] = win
+	end
+
+	local cues = internal.show_cues(targets, opts.border)
+
+	vim.cmd("mode") -- clear cmdline once
+	print(opts.prompt or defaults.prompt)
+
+	local ok, choice = pcall(vim.fn.getchar) -- Ctrl-C returns an error
+
+	vim.cmd("mode") -- clear cmdline again to remove pick-up message
+	internal.hide_cues(cues)
+
+	local is_ctrl_c = not ok
+	local is_esc = choice == ESC_CODE
+
+	if is_ctrl_c or is_esc then
+		return nil
+	end
+
+	choice = string.char(choice):upper()
+
+	return targets[choice]
 end
 
--- Prompts the user for a window to be focused. In case there's only one viable window available, it
--- automatically picks that window instead.
---
--- It tries to apply some heuristics in order to pick the best window possible (listed, no buftype
--- or even a terminal), but falls back to them if no other "good" window is available.
---
--- @returns Whether a window has been picked and successfully focused
-function M.pick_window()
-	local winids = api.nvim_tabpage_list_wins(0)
-	local recipient_winids
-
-	-- Let's filter windows that shouldn't be used as recipients because of their specific types
-	-- and, in case there is at least one listed window left for us to use as a recipient, we pick
-	-- the filtered list, otherwise, we keep using unlisted windows.
-	recipient_winids = vim.tbl_filter(function(winid)
-		local bufnr = api.nvim_win_get_buf(winid)
-		local buftype = api.nvim_buf_get_option(bufnr, "buftype")
-		local denylist = options.denylist or {}
-
-		return not denylist[buftype]
-	end, winids)
-
-	if #recipient_winids == 0 then
-		recipient_winids = winids
-	end
-
-	if #recipient_winids == 1 then
-		return focus_win(recipient_winids[1])
-	end
-
-	local ascii_win_map, cue_winids = render_cues(recipient_winids)
-	if vim.tbl_isempty(ascii_win_map) then
+--- Selects a window and then focuses it.
+--- @param opts table: Optional options that may override global options.
+--- @return boolean: Whether a window has been selected and focused.
+function M.focus(opts)
+	local win = M.select(opts)
+	if not win then
 		return false
 	end
 
-	local ascii_code = prompt_for_ascii_code()
-	clear_cues(cue_winids)
-	if not ascii_code then
-		return false
-	end
+	api.nvim_set_current_win(win)
 
-	local winid = ascii_win_map[ascii_code]
-	if not winid then
-		return false
-	end
-
-	return focus_win(winid)
+	return true
 end
 
--- Overrides default options.
+--- Sets up the plug-in by overriding default options.
+--- @param opts table: Options to be globally overridden.
 function M.setup(opts)
-	options = vim.tbl_extend("force", options, opts or {})
+	defaults = vim.tbl_deep_extend("force", internal.defaults, opts or {})
 end
 
 return M
