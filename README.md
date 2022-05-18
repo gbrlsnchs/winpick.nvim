@@ -2,7 +2,14 @@
 
 [![Codeberg CI](https://ci.codeberg.org/api/badges/gbrlsnchs/winpick.nvim/status.svg)](https://codeberg.org/gbrlsnchs/winpick.nvim/commits/branch/trunk)
 
-This is a very simple plugin to help with picking an open window.
+This is a very simple plugin to help with picking an open window. It basically has two functions:
+`select` and `focus`.
+
+If you only want to pick a window and focus it, use `focus`. It will return `true` if you in fact
+chose a window.
+
+Now, if you want to do fancier stuff, use `select`. If you in fact selected a window, it will return
+the ID of the window you just selected, allowing you to manipulate it as you wish.
 
 ## Usage
 ```lua
@@ -35,6 +42,11 @@ winpick.setup({
 		filetype = "NvimTree",
 	},
 	win_excludes = false, -- won't check window options
+})
+
+winpick.focus({
+	border = "single",
+	buf_excludes = false,
 })
 ```
 
