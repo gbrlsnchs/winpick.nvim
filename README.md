@@ -2,6 +2,8 @@
 
 [![Codeberg CI](https://ci.codeberg.org/api/badges/gbrlsnchs/winpick.nvim/status.svg)](https://codeberg.org/gbrlsnchs/winpick.nvim/commits/branch/trunk)
 
+![Example of how winpick works](https://i.imgur.com/4xACRUJ.png)
+
 This is a very simple plugin to help with picking an open window. It basically has two functions:
 `select` and `focus`.
 
