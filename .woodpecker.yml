@@ -1,0 +1,16 @@
+pipeline:
+  build:
+    image: docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    commands:
+      - docker build --rm --tag winpick-ci:${CI_COMMIT_SHA} .
+  test:
+    image: winpick-ci:${CI_COMMIT_SHA}
+
+when:
+  path:
+    - .woodpecker.yml
+    - lua/*
+    - scripts/test.sh
+    - tests/*
