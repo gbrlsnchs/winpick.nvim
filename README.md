@@ -1,5 +1,7 @@
 # winpick
 
+[![Codeberg CI](https://ci.codeberg.org/api/badges/gbrlsnchs/winpick.nvim/status.svg)](https://codeberg.org/gbrlsnchs/winpick.nvim/commits/branch/trunk)
+
 This is a very simple plugin to help with picking an open window.
 
 ## Usage
