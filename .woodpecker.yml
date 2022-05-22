@@ -1,12 +1,13 @@
 pipeline:
-  build:
-    image: docker
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    commands:
-      - docker build --rm --tag winpick-ci:${CI_COMMIT_SHA} .
   test:
-    image: winpick-ci:${CI_COMMIT_SHA}
+    image: debian
+    commands:
+      - apt update --yes
+      - apt install --yes curl git
+      - curl --location https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.deb --output ../nvim.deb
+      - git clone https://github.com/nvim-lua/plenary.nvim ../plenary.nvim
+      - apt install ../nvim.deb
+      - ./scripts/test.sh
 
 when:
   path:
