@@ -61,7 +61,7 @@ function M.select(opts)
 		targets[internal.format_index(idx)] = win
 	end
 
-	local cues = internal.show_cues(targets, opts.border)
+	local cues = internal.show_cues(targets, opts)
 
 	vim.cmd("mode") -- clear cmdline once
 	print(opts.prompt or defaults.prompt)

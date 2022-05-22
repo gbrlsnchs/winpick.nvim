@@ -1,5 +1,20 @@
 local api = vim.api
 
+--- Shows label and buffer name, if available. Else, show only the label.
+--- @param win number: ID of the selected window.
+--- @param label string: Label to be shown alongside the buffer name.
+--- @return string: The label as is.
+local function format_label(label, win)
+	local bufnr = api.nvim_win_get_buf(win)
+	local buf_name = api.nvim_buf_get_name(bufnr)
+
+	if buf_name:len() == 0 then
+		return label
+	end
+
+	return string.format("%s: %s", label, vim.fn.fnamemodify(buf_name, ":~:."))
+end
+
 local M = {}
 
 M.defaults = {
@@ -11,22 +26,8 @@ M.defaults = {
 		previewwindow = true,
 	},
 	prompt = "Pick a window: ",
+	label_func = format_label,
 }
-
---- Shows label and buffer name, if available. Else, show only the label.
---- @param win number: ID of the selected window.
---- @param label string: Label to be shown alongside the buffer name.
---- @return string: The label as is.
-local function format_label(win, label)
-	local bufnr = api.nvim_win_get_buf(win)
-	local buf_name = api.nvim_buf_get_name(bufnr)
-
-	if buf_name:len() == 0 then
-		return label
-	end
-
-	return string.format("%s: %s", label, vim.fn.fnamemodify(buf_name, ":~:."))
-end
 
 --- Maps a table index to an ASCII character starting from A (1 is A, 2 is B, and so on).
 --- @param idx number: Index of a table.
@@ -37,15 +38,15 @@ end
 
 --- Shows visual cues for each window.
 --- @param targets table: Map of labels and their respective window IDs.
---- @param border string: Type of border to use for visual cues.
+--- @param opts table: Options for showing visual cues.
 --- @return table: List of visual cues that were opened.
-function M.show_cues(targets, border)
+function M.show_cues(targets, opts)
 	-- Reset view.
 	local cues = {}
 	for label, win in pairs(targets) do
 		local bufnr = api.nvim_create_buf(false, true)
 
-		label = format_label(win, label)
+		label = opts.label_func(label, win)
 
 		local padding = string.rep(" ", 4)
 		local fill = string.rep(" ", label:len())
@@ -73,7 +74,7 @@ function M.show_cues(targets, border)
 			row = math.floor(center_y - height / 2),
 			focusable = false,
 			style = "minimal",
-			border = border,
+			border = opts.border,
 		})
 
 		pcall(api.nvim_buf_set_option, cue_win, "buftype", "nofile")

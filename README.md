@@ -32,6 +32,7 @@ Options can be set in `setup` and also as first parameter of `select`:
 | `border` | Border style passed internally to `nvim_open_win`. | `"double"` |
 | `buf_excludes` | Set of buffer options that help detecting buffers to avoid. Accepts either single values of lists of values. | `{ buftype = "quickfix" }` |
 | `win_excludes` | Set of window options that help detecting windows to avoid. Accepts either single values of lists of values. | `{ previewwindow = true }` |
+| `label_func` | Function to render labels for visual cues. Receives the label itself and the window ID.| Function that returns label and buffer name, if available. |
 
 #### Example
 ```lua
@@ -40,7 +41,7 @@ local winpick = require("winpick")
 winpick.setup({
 	border = "none",
 	buf_excludes = {
-		buftype = { "quickfix", "terminal" }
+		buftype = { "quickfix", "terminal" },
 		filetype = "NvimTree",
 	},
 	win_excludes = false, -- won't check window options
@@ -49,6 +50,9 @@ winpick.setup({
 winpick.focus({
 	border = "single",
 	buf_excludes = false,
+	label_func = function(label, win)
+		return string.format("%s at %d", label, win)
+	end,
 })
 ```
 
