@@ -43,7 +43,7 @@ describe("winpick internal API", function()
 		api.nvim_buf_set_name(bufnr, "foobar")
 
 		local opts = vim.tbl_extend("force", internal.defaults, {
-			label_func = function(label)
+			format_label = function(label)
 				return "testing: " .. label
 			end,
 		})

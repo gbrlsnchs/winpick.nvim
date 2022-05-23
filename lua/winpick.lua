@@ -83,20 +83,6 @@ function M.select(opts)
 	return targets[choice]
 end
 
---- Selects a window and then focuses it.
---- @param opts table: Optional options that may override global options.
---- @return boolean: Whether a window has been selected and focused.
-function M.focus(opts)
-	local win = M.select(opts)
-	if not win then
-		return false
-	end
-
-	api.nvim_set_current_win(win)
-
-	return true
-end
-
 --- Sets up the plug-in by overriding default options.
 --- @param opts table: Options to be globally overridden.
 function M.setup(opts)

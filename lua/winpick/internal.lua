@@ -26,7 +26,7 @@ M.defaults = {
 		previewwindow = true,
 	},
 	prompt = "Pick a window: ",
-	label_func = format_label,
+	format_label = format_label,
 }
 
 --- Maps a table index to an ASCII character starting from A (1 is A, 2 is B, and so on).
@@ -46,7 +46,7 @@ function M.show_cues(targets, opts)
 	for label, win in pairs(targets) do
 		local bufnr = api.nvim_create_buf(false, true)
 
-		label = opts.label_func(label, win)
+		label = opts.format_label(label, win)
 
 		local padding = string.rep(" ", 4)
 		local fill = string.rep(" ", label:len())
