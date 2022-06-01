@@ -1,0 +1,76 @@
+*winpick.txt*                             Plugin that helps with picking windows
+
+==============================================================================
+CONTENTS                                                               *winpick*
+
+    1. Usage                  |winpick-usage|
+        I. API                |winpick-api|
+    2. Options                |winpick-options|
+
+==============================================================================
+USAGE                                                            *winpick-usage*
+
+This plugin is a single-function library that helps with picking a window
+inside Neovim.
+
+Basically, it shows visual cues with labels assigned to them. Meanwhile, it
+also prompts the user with a label. Once the user presses the respective key
+to a label, the function returns the selected window's ID, or `nil` if no
+window is selected.
+
+------------------------------------------------------------------------------
+API                                                                |winpick-api|
+
+setup({opts})                                                    *winpick.setup*
+                Sets global options.
+
+                Example: >
+
+                    winpick.setup({
+                        border = "none",
+                        buf_excludes = {
+                            buftype = { "quickfix", "terminal" },
+                            filetype = "NvimTree",
+                        },
+                        win_excludes = false,
+                    })
+
+                    print(selected_win)
+<
+                Parameters:~
+                    {opts}        (table) Options to set global options for
+                                  this run. See |winpick-options|.
+
+select({opts})                                                 *winpick.select*
+                Prompts the user for a key while showing visual cues
+
+                Example: >
+
+                    local selected_win = winpick.select()
+
+                    -- Focus the selected window.
+                    if selected_win then
+                        vim.api.nvim_set_current_win(selected_win)
+                    end
+<
+                Parameters:~
+                    {opts}        (table) Options to override global options
+                                  for this run. See |winpick-options|.
+
+==============================================================================
+OPTIONS                                                         *winpick-optons*
+
+    • border (string) Style of visual cues' borders. Defaults to `double`.
+
+    • buf_excludes (table) Table containing filters that match buffer options.
+    The buffer option names are the keys, while values are values to be
+    matched from those options. A list can be used in order to match any value
+    in it disjunctively. Defaults to ignoring |quickfix|.
+
+    • win_excludes (table) Same as buf_excludes, but works for window options.
+    Defaults to ignoring |preview-window|.
+
+    • format_label (function) Function that formats the labels for visual
+    cues. It receives the target window ID as first parameter and the
+    corresponding label for the visual cue (A, B, C, etc). Defaults to
+    printing the respective label and the buffer name, if any.

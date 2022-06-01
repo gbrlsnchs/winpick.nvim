@@ -4,57 +4,49 @@
 
 ![Example of how winpick works](https://i.imgur.com/4xACRUJ.png)
 
-This is a very simple plugin to help with picking an open window. It basically has two functions:
-`select` and `focus`.
+Plugin that helps with picking windows.
 
-If you only want to pick a window and focus it, use `focus`. It will return `true` if you in fact
-chose a window.
+# Usage
 
-Now, if you want to do fancier stuff, use `select`. If you in fact selected a window, it will return
-the ID of the window you just selected, allowing you to manipulate it as you wish.
+This plugin is a single-function library that helps with picking a window inside Neovim.
 
-## Usage
+Basically, it shows visual cues with labels assigned to them. Meanwhile, it also prompts the user
+with a label. Once the user presses the respective key to a label, the function returns the selected
+window's ID, or `nil` if no window is selected.
+
+## API
+### Setup
 ```lua
-local winpick = require("winpick")
-
-local win = winpick.select()
-print(win)
-
-local has_focused = winpick.focus()
-print(has_focused)
-```
-
-### Custom options
-Options can be set in `setup` and also as first parameter of `select`:
-
-| Option | Description | Default value |
-|--------|-------------|---------------|
-| `border` | Border style passed internally to `nvim_open_win`. | `"double"` |
-| `buf_excludes` | Set of buffer options that help detecting buffers to avoid. Accepts either single values of lists of values. | `{ buftype = "quickfix" }` |
-| `win_excludes` | Set of window options that help detecting windows to avoid. Accepts either single values of lists of values. | `{ previewwindow = true }` |
-| `label_func` | Function to render labels for visual cues. Receives the label itself and the window ID.| Function that returns label and buffer name, if available. |
-
-#### Example
-```lua
-local winpick = require("winpick")
-
 winpick.setup({
 	border = "none",
 	buf_excludes = {
 		buftype = { "quickfix", "terminal" },
 		filetype = "NvimTree",
 	},
-	win_excludes = false, -- won't check window options
+	win_excludes = false,
 })
 
-winpick.focus({
-	border = "single",
-	buf_excludes = false,
-	label_func = function(label, win)
-		return string.format("%s at %d", label, win)
-	end,
-})
+print(selected_win)
 ```
 
-Scoped options can also be passed to `winpick.select` and `winpick.focus`, which will override the
-global config or fall back to it altogether in case nothing is passed.
+### Select a window
+```lua
+local selected_win = winpick.select()
+
+-- Focus the selected window.
+if selected_win then
+	vim.api.nvim_set_current_win(selected_win)
+end
+```
+
+# Options
+
+- `border` (string) Style of visual cues' borders. Defaults to `double`.
+- `buf_excludes` (table) Table containing filters that match buffer options. The buffer option names
+  are the keys, while values are values to be matched from those options. A list can be used in
+  order to match any value in it disjunctively. Defaults to ignoring quickfix.
+- `win_excludes` (table) Same as buf_excludes, but works for window options. Defaults to ignoring
+  the preview window.
+- `format_label` (function) Function that formats the labels for visual cues. It receives the target
+  window ID as first parameter and the corresponding label for the visual cue (A, B, C, etc).
+  Defaults to printing the respective label and the buffer name, if any.
