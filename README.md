@@ -8,6 +8,8 @@ Plugin that helps with picking windows.
 
 # Usage
 
+> Note: use `:help winpick.txt` for a Vim friendly documentation.
+
 This plugin is a single-function library that helps with picking a window inside Neovim.
 
 Basically, it shows visual cues with labels assigned to them. Meanwhile, it also prompts the user
