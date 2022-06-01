@@ -18,7 +18,6 @@ describe("winpick API", function()
 		vim.fn.getchar:clear()
 		internal.show_cues:clear()
 		internal.hide_cues:clear()
-		internal.defaults.callback:clear()
 
 		-- reset config
 		winpick.setup()
