@@ -30,8 +30,8 @@ M.defaults = {
 }
 
 --- Maps a table index to an ASCII character starting from A (1 is A, 2 is B, and so on).
---- @param idx number: Index of a table.
---- @return number: The respective ASCII character.
+--- @param idx integer: Index of a table.
+--- @return string: The respective ASCII character.
 function M.format_index(idx)
 	return string.char(idx + 64)
 end
