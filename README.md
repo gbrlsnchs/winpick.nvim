@@ -14,40 +14,37 @@ This plugin is a single-function library that helps with picking a window inside
 
 Basically, it shows visual cues with labels assigned to them. Meanwhile, it also prompts the user
 with a label. Once the user presses the respective key to a label, the function returns the selected
-window's ID, or `nil` if no window is selected.
+window's ID and its corresponding buffer ID, or just `nil` if no window is selected.
 
 ## API
 ### Setup
+Here an example with all default options:
 ```lua
 winpick.setup({
-	border = "none",
-	buf_excludes = {
-		buftype = { "quickfix", "terminal" },
-		filetype = "NvimTree",
-	},
-	win_excludes = false,
+	border = "double",
+	filter = default_filter, -- filters preview window and quickfix
+	prompt = "Pick a window: ",
+	format_label = default_label_formatter, -- formatted as "<label>: <buffer name>"
 })
-
-print(selected_win)
 ```
 
 ### Select a window
 ```lua
-local selected_win = winpick.select()
+local winid, bufnr = winpick.select()
 
 -- Focus the selected window.
-if selected_win then
+if winid then
 	vim.api.nvim_set_current_win(selected_win)
+	print(bufnr)
 end
 ```
 
 # Options
 
 - `border` (string) Style of visual cues' borders. Defaults to `double`.
-- `buf_filter` (function) Predicate function that receives a buffer ID and returns whether its
-  window is eligible for being picked. Defaults to ignoring quickfix.
-- `win_filter` (function) Same as buf_filter, but receives a window ID instead. Defaults to ignoring
-  preview window.
+- `filter` (function) Predicate function that receives a target window's corresponding ID and buffer
+  ID and returns whether that window is eligible for being picked. Defaults to ignoring preview
+  window and quickfix.
 - `format_label` (function) Function that formats the labels for visual cues. It receives the target
   window ID as first parameter and the corresponding label for the visual cue (A, B, C, etc).
   Defaults to printing the respective label and the buffer name, if any.

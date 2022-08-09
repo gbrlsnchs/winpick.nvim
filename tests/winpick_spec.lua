@@ -36,12 +36,13 @@ describe("winpick API", function()
 
 	describe("for single window scenarios", function()
 		it("should not show visual cue but still select current window", function()
-			local selected_win = winpick.select()
+			local winid, bufnr = winpick.select()
 
 			assert.stub(vim.fn.getchar).was_not_called()
 			assert.stub(internal.show_cues).was_not_called()
 			assert.stub(internal.hide_cues).was_not_called()
-			assert.equals(api.nvim_get_current_win(), selected_win)
+			assert.equals(api.nvim_get_current_win(), winid)
+			assert.equals(api.nvim_get_current_buf(), bufnr)
 		end)
 	end)
 
@@ -50,17 +51,21 @@ describe("winpick API", function()
 			internal.show_cues.returns({ 1, 2 })
 			vim.fn.getchar.returns(string.byte("A"))
 
+			local bufnr1 = api.nvim_get_current_buf()
 			vim.cmd("wincmd v")
+			local bufnr2 = api.nvim_get_current_buf()
 
 			local open_wins = api.nvim_tabpage_list_wins(0)
-			local selected_win = winpick.select()
+			local winid, bufnr = winpick.select()
 
 			assert.stub(vim.fn.getchar).was_called()
-			assert
-				.stub(internal.show_cues)
-				.was_called_with({ A = open_wins[1], B = open_wins[2] }, internal.defaults)
+			assert.stub(internal.show_cues).was_called_with({
+				A = { id = open_wins[1], bufnr = bufnr1 },
+				B = { id = open_wins[2], bufnr = bufnr2 },
+			}, internal.defaults)
 			assert.stub(internal.hide_cues).was_called_with({ 1, 2 })
-			assert.equals(api.nvim_get_current_win(), selected_win)
+			assert.equals(api.nvim_get_current_win(), winid)
+			assert.equals(api.nvim_get_current_buf(), bufnr)
 		end)
 	end)
 
@@ -69,19 +74,23 @@ describe("winpick API", function()
 			internal.show_cues.returns({ 1, 2 })
 			vim.fn.getchar.returns(string.byte("A"))
 
+			local bufnr1 = api.nvim_get_current_buf()
 			vim.cmd("wincmd v")
+			local bufnr2 = api.nvim_get_current_buf()
 			vim.cmd("botright copen")
 			vim.cmd("wincmd w") -- returns to first window
 
 			local open_wins = api.nvim_tabpage_list_wins(0)
-			local selected_win = winpick.select()
+			local winid, bufnr = winpick.select()
 
 			assert.stub(vim.fn.getchar).was_called()
-			assert
-				.stub(internal.show_cues)
-				.was_called_with({ A = open_wins[1], B = open_wins[2] }, internal.defaults)
+			assert.stub(internal.show_cues).was_called_with({
+				A = { id = open_wins[1], bufnr = bufnr1 },
+				B = { id = open_wins[2], bufnr = bufnr2 },
+			}, internal.defaults)
 			assert.stub(internal.hide_cues).was_called_with({ 1, 2 })
-			assert.equals(api.nvim_get_current_win(), selected_win)
+			assert.equals(api.nvim_get_current_win(), winid)
+			assert.equals(api.nvim_get_current_buf(), bufnr)
 		end)
 
 		it("should not consider preview window by default", function()
@@ -89,20 +98,24 @@ describe("winpick API", function()
 			vim.fn.getchar.returns(string.byte("A"))
 
 			vim.opt.splitright = true
+			local bufnr1 = api.nvim_get_current_buf()
 			vim.cmd("wincmd v")
+			local bufnr2 = api.nvim_get_current_buf()
 			vim.cmd("wincmd v")
 			api.nvim_win_set_option(api.nvim_get_current_win(), "previewwindow", true)
 			vim.cmd("wincmd w")
 
 			local open_wins = api.nvim_tabpage_list_wins(0)
-			local selected_win = winpick.select()
+			local winid, bufnr = winpick.select()
 
 			assert.stub(vim.fn.getchar).was_called()
-			assert
-				.stub(internal.show_cues)
-				.was_called_with({ A = open_wins[1], B = open_wins[2] }, internal.defaults)
+			assert.stub(internal.show_cues).was_called_with({
+				A = { id = open_wins[1], bufnr = bufnr1 },
+				B = { id = open_wins[2], bufnr = bufnr2 },
+			}, internal.defaults)
 			assert.stub(internal.hide_cues).was_called_with({ 1, 2 })
-			assert.equals(api.nvim_get_current_win(), selected_win)
+			assert.equals(api.nvim_get_current_win(), winid)
+			assert.equals(api.nvim_get_current_buf(), bufnr)
 		end)
 	end)
 end)
