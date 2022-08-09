@@ -29,7 +29,6 @@ setup({opts})                                                    *winpick.setup*
                     winpick.setup({
                         border = "none",
                         buf_filter = function(bufnr)
-                            local ftype =
                             return vim.api.nvim_buf_get_option(bufnr, "filetype") ~= "NvimTree"
                         end,
                         win_filter = nil,
