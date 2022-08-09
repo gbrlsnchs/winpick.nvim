@@ -56,7 +56,51 @@ describe("winpick API", function()
 			local selected_win = winpick.select()
 
 			assert.stub(vim.fn.getchar).was_called()
-			assert.stub(internal.show_cues).was_called_with({ A = open_wins[1], B = open_wins[2] }, internal.defaults)
+			assert
+				.stub(internal.show_cues)
+				.was_called_with({ A = open_wins[1], B = open_wins[2] }, internal.defaults)
+			assert.stub(internal.hide_cues).was_called_with({ 1, 2 })
+			assert.equals(api.nvim_get_current_win(), selected_win)
+		end)
+	end)
+
+	describe("window and buffer filters", function()
+		it("should not consider quickfix by default", function()
+			internal.show_cues.returns({ 1, 2 })
+			vim.fn.getchar.returns(string.byte("A"))
+
+			vim.cmd("wincmd v")
+			vim.cmd("botright copen")
+			vim.cmd("wincmd w") -- returns to first window
+
+			local open_wins = api.nvim_tabpage_list_wins(0)
+			local selected_win = winpick.select()
+
+			assert.stub(vim.fn.getchar).was_called()
+			assert
+				.stub(internal.show_cues)
+				.was_called_with({ A = open_wins[1], B = open_wins[2] }, internal.defaults)
+			assert.stub(internal.hide_cues).was_called_with({ 1, 2 })
+			assert.equals(api.nvim_get_current_win(), selected_win)
+		end)
+
+		it("should not consider preview window by default", function()
+			internal.show_cues.returns({ 1, 2 })
+			vim.fn.getchar.returns(string.byte("A"))
+
+			vim.opt.splitright = true
+			vim.cmd("wincmd v")
+			vim.cmd("wincmd v")
+			api.nvim_win_set_option(api.nvim_get_current_win(), "previewwindow", true)
+			vim.cmd("wincmd w")
+
+			local open_wins = api.nvim_tabpage_list_wins(0)
+			local selected_win = winpick.select()
+
+			assert.stub(vim.fn.getchar).was_called()
+			assert
+				.stub(internal.show_cues)
+				.was_called_with({ A = open_wins[1], B = open_wins[2] }, internal.defaults)
 			assert.stub(internal.hide_cues).was_called_with({ 1, 2 })
 			assert.equals(api.nvim_get_current_win(), selected_win)
 		end)

@@ -19,12 +19,12 @@ local M = {}
 
 M.defaults = {
 	border = "double",
-	buf_excludes = {
-		buftype = "quickfix",
-	},
-	win_excludes = {
-		previewwindow = true,
-	},
+	buf_filter = function(bufnr)
+		return api.nvim_buf_get_option(bufnr, "buftype") ~= "quickfix"
+	end,
+	win_filter = function(winid)
+		return not api.nvim_win_get_option(winid, "previewwindow")
+	end,
 	prompt = "Pick a window: ",
 	format_label = format_label,
 }

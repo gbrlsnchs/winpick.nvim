@@ -11,7 +11,7 @@ local M = {}
 --- Prompts for a window to be selected. A callback is used for handling the action. The default
 --- action is to focus the selected window. The argument passed to the callback is a window ID if a
 --- window is selected or nil if it the selection is aborted.
---- @param opts table: Optional options that may override global options.
+--- @param opts table | nil: Optional options that may override global options.
 --- @return number: Window ID of the selected window.
 function M.select(opts)
 	opts = vim.tbl_deep_extend("force", defaults, opts or {})
@@ -20,28 +20,13 @@ function M.select(opts)
 
 	-- Filter out some buffers according to configuration.
 	local eligible_wins = vim.tbl_filter(function(win)
-		local win_excludes = opts.win_excludes or {}
-
-		for opt_name, value in pairs(win_excludes) do
-			local option = api.nvim_win_get_option(win, opt_name)
-			local exclude = (vim.tbl_islist(value) and value) or { value }
-
-			if vim.tbl_contains(exclude, option) then
-				return false
-			end
+		if opts.win_filter and not opts.win_filter(win) then
+			return false
 		end
 
-
-		local buf_excludes = opts.buf_excludes or {}
 		local bufnr = api.nvim_win_get_buf(win)
-
-		for opt_name, value in pairs(buf_excludes) do
-			local option = api.nvim_buf_get_option(bufnr, opt_name)
-			local exclude = (vim.tbl_islist(value) and value) or { value }
-
-			if vim.tbl_contains(exclude, option) then
-				return false
-			end
+		if opts.buf_filter and not opts.buf_filter(bufnr) then
+			return false
 		end
 
 		return true

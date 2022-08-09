@@ -28,11 +28,11 @@ setup({opts})                                                    *winpick.setup*
 
                     winpick.setup({
                         border = "none",
-                        buf_excludes = {
-                            buftype = { "quickfix", "terminal" },
-                            filetype = "NvimTree",
-                        },
-                        win_excludes = false,
+                        buf_filter = function(bufnr)
+                            local ftype =
+                            return vim.api.nvim_buf_get_option(bufnr, "filetype") ~= "NvimTree"
+                        end,
+                        win_filter = nil,
                     })
 
                     print(selected_win)
@@ -62,13 +62,12 @@ OPTIONS                                                         *winpick-optons*
 
     • border (string) Style of visual cues' borders. Defaults to `double`.
 
-    • buf_excludes (table) Table containing filters that match buffer options.
-    The buffer option names are the keys, while values are values to be
-    matched from those options. A list can be used in order to match any value
-    in it disjunctively. Defaults to ignoring |quickfix|.
+    • buf_filter (function) Predicate function that receives a buffer ID and
+    returns whether its window is eligible for being picked. Defaults to
+    ignoring |quickfix|.
 
-    • win_excludes (table) Same as buf_excludes, but works for window options.
-    Defaults to ignoring |preview-window|.
+    • win_filter (function) Same as buf_filter, but receives a window ID
+    instead. Defaults to ignoring |preview-window|.
 
     • format_label (function) Function that formats the labels for visual
     cues. It receives the target window ID as first parameter and the
