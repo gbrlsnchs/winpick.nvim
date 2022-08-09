@@ -26,8 +26,8 @@ function M.select(opts)
 
 	-- Filter out some buffers according to configuration.
 	local eligible_wins = vim.tbl_filter(function(win)
-		if opts.filter and not opts.filter(win.id, win.bufnr) then
-			return false
+		if opts.filter then
+			return opts.filter(win.id, win.bufnr)
 		end
 
 		return true
