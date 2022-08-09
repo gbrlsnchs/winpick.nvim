@@ -44,11 +44,10 @@ end
 # Options
 
 - `border` (string) Style of visual cues' borders. Defaults to `double`.
-- `buf_excludes` (table) Table containing filters that match buffer options. The buffer option names
-  are the keys, while values are values to be matched from those options. A list can be used in
-  order to match any value in it disjunctively. Defaults to ignoring quickfix.
-- `win_excludes` (table) Same as buf_excludes, but works for window options. Defaults to ignoring
-  the preview window.
+- `buf_filter` (function) Predicate function that receives a buffer ID and returns whether its
+  window is eligible for being picked. Defaults to ignoring quickfix.
+- `win_filter` (function) Same as buf_filter, but receives a window ID instead. Defaults to ignoring
+  preview window.
 - `format_label` (function) Function that formats the labels for visual cues. It receives the target
   window ID as first parameter and the corresponding label for the visual cue (A, B, C, etc).
   Defaults to printing the respective label and the buffer name, if any.
