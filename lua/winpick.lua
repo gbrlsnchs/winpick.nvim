@@ -4,7 +4,7 @@ local api = vim.api
 
 local ESC_CODE = 27
 
-local defaults = internal.defaults
+local defaults = internal.defaults()
 
 local M = {}
 
@@ -74,7 +74,15 @@ end
 --- Sets up the plug-in by overriding default options.
 --- @param opts table: Options to be globally overridden.
 function M.setup(opts)
-	defaults = vim.tbl_deep_extend("force", internal.defaults, opts or {})
+	defaults = vim.tbl_deep_extend("force", defaults, opts or {})
 end
+
+--- Default values, for reusability. Read-only, errors if modified.
+M.defaults = setmetatable({}, {
+	__index = internal.defaults(),
+	__newindex = function()
+		error("defaults are read-only")
+	end,
+})
 
 return M

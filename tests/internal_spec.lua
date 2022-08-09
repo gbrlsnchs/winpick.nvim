@@ -22,7 +22,7 @@ describe("winpick internal API", function()
 		api.nvim_win_set_buf(winid, bufnr)
 		api.nvim_buf_set_name(bufnr, "foobar")
 
-		local cues = internal.show_cues({ A = { id = winid, bufnr = bufnr } }, internal.defaults)
+		local cues = internal.show_cues({ A = { id = winid, bufnr = bufnr } }, internal.defaults())
 		local cue_buf = api.nvim_win_get_buf(cues[1])
 
 		local want = {
@@ -42,7 +42,7 @@ describe("winpick internal API", function()
 		api.nvim_win_set_buf(winid, bufnr)
 		api.nvim_buf_set_name(bufnr, "foobar")
 
-		local opts = vim.tbl_extend("force", internal.defaults, {
+		local opts = vim.tbl_extend("force", internal.defaults(), {
 			format_label = function(label, _, _)
 				return "testing: " .. label
 			end,
@@ -75,7 +75,7 @@ describe("winpick internal API", function()
 		local cues = internal.show_cues({
 			A = { id = open_wins[1], bufnr = bufnr1 },
 			B = { id = open_wins[2], bufnr = bufnr2 },
-		}, internal.defaults)
+		}, internal.defaults())
 
 		api.nvim_win_close(cues[1], true) -- make sure hide_cues won't fail despite this being missing
 		internal.hide_cues(cues)
@@ -90,7 +90,7 @@ describe("winpick internal API", function()
 		api.nvim_win_set_buf(winid, bufnr)
 		api.nvim_buf_set_name(bufnr, "foobar")
 
-		local opts = vim.tbl_extend("force", internal.defaults, {
+		local opts = vim.tbl_extend("force", internal.defaults(), {
 			format_label = false,
 		})
 

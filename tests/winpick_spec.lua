@@ -23,14 +23,6 @@ describe("winpick API", function()
 		winpick.setup()
 	end)
 
-	describe("setup", function()
-		it("should not overwrite internal defaults", function()
-			winpick.setup({ border = false })
-
-			assert.equals("double", internal.defaults.border)
-		end)
-	end)
-
 	-- TODO: Add tests with custom options.
 	-- TODO: Add tests for cancel events.
 
@@ -62,7 +54,7 @@ describe("winpick API", function()
 			assert.stub(internal.show_cues).was_called_with({
 				A = { id = open_wins[1], bufnr = bufnr1 },
 				B = { id = open_wins[2], bufnr = bufnr2 },
-			}, internal.defaults)
+			}, internal.defaults())
 			assert.stub(internal.hide_cues).was_called_with({ 1, 2 })
 			assert.equals(api.nvim_get_current_win(), winid)
 			assert.equals(api.nvim_get_current_buf(), bufnr)
@@ -87,7 +79,7 @@ describe("winpick API", function()
 			assert.stub(internal.show_cues).was_called_with({
 				A = { id = open_wins[1], bufnr = bufnr1 },
 				B = { id = open_wins[2], bufnr = bufnr2 },
-			}, internal.defaults)
+			}, internal.defaults())
 			assert.stub(internal.hide_cues).was_called_with({ 1, 2 })
 			assert.equals(api.nvim_get_current_win(), winid)
 			assert.equals(api.nvim_get_current_buf(), bufnr)
@@ -112,10 +104,19 @@ describe("winpick API", function()
 			assert.stub(internal.show_cues).was_called_with({
 				A = { id = open_wins[1], bufnr = bufnr1 },
 				B = { id = open_wins[2], bufnr = bufnr2 },
-			}, internal.defaults)
+			}, internal.defaults())
 			assert.stub(internal.hide_cues).was_called_with({ 1, 2 })
 			assert.equals(api.nvim_get_current_win(), winid)
 			assert.equals(api.nvim_get_current_buf(), bufnr)
+		end)
+	end)
+
+	describe("defaults helper", function()
+		it("should be a read-only version of the defaults table", function()
+			assert.are.same(winpick.defaults, internal.defaults())
+			assert.has_error(function()
+				winpick.defaults.border = "none"
+			end, "defaults are read-only")
 		end)
 	end)
 end)

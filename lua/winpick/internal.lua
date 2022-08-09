@@ -33,12 +33,16 @@ end
 
 local M = {}
 
-M.defaults = {
-	border = "double",
-	filter = default_filter,
-	prompt = "Pick a window: ",
-	format_label = default_label_formatter,
-}
+--- Builds the default options.
+--- @return table: The defaults.
+function M.defaults()
+	return {
+		border = "double",
+		filter = default_filter,
+		prompt = "Pick a window: ",
+		format_label = default_label_formatter,
+	}
+end
 
 --- Maps a table index to an ASCII character starting from A (1 is A, 2 is B, and so on).
 --- @param idx integer: Index of a table.
