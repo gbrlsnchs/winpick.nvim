@@ -39,7 +39,7 @@ if winid then
 end
 ```
 
-# Options
+## Options
 
 - `border` (string) Style of visual cues' borders. Defaults to `double`.
 - `filter` (function) Predicate function that receives a target window's corresponding ID and buffer
@@ -48,3 +48,43 @@ end
 - `format_label` (function) Function that formats the labels for visual cues. It receives the target
   window ID as first parameter and the corresponding label for the visual cue (A, B, C, etc).
   Defaults to printing the respective label and the buffer name, if any.
+
+## Some example ideas
+<details>
+<summary>Moving to a window</summary>
+
+```lua
+local winid = winpick.select()
+
+if winid then
+	vim.api.nvim_set_current_win(winid)
+end
+```
+
+</details>
+
+<details>
+<summary>Copying a buffer's path</summary>
+
+```lua
+local winid, bufnr = winpick.select({
+	filter = function(winid, bufnr)
+		if vim.api.nvim_buf_get_option(bufnr, "buftype") == "terminal" then
+			return false
+		end
+
+		return winpick.defaults.filter(winid, bufnr)
+	end,
+})
+
+if not winid then
+	return
+end
+
+local name = api.nvim_buf_get_name(bufnr)
+if name then
+	vim.fn.setreg("+", vim.fn.fnamemodify(name, ":~:."))
+end
+```
+
+</details>

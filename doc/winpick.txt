@@ -61,6 +61,10 @@ select({opts})                                                 *winpick.select*
                 Return:~
                     (winid, bufnr) IDs for the selected window and its buffer.
 
+defaults                                                     *winpick-defaults*
+        A read-only table containing the default setup values. Useful for
+        reusing those values even when they have been overriden.
+
 ==============================================================================
 OPTIONS                                                        *winpick-options*
 
