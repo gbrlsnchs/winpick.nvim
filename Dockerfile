@@ -1,4 +1,4 @@
-FROM debian
+FROM docker.io/debian
 
 RUN \
 	apt update --yes && \
