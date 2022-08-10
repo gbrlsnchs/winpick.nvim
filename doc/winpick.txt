@@ -22,17 +22,16 @@ window is selected.
 API                                                                |winpick-api|
 
 setup({opts})                                                    *winpick.setup*
-                Sets global options. For default values, see |winpick-options|.
+                Sets global options. For details on default values, check
+                |winpick-options|.
 
-                Example: >
+                Example with all the default options: >
 
                     winpick.setup({
-                        border = "none",
-                        filter = function(_, bufnr)
-                            local buftype = vim.api.nvim_buf_get_option(bufnr, "buftype")
-
-                            return vim.tbl_contains({ "quickfix", "terminal" }, buftype)
-                        end,
+                        border = "double",
+                        filter = winpick.defaults.filter,
+                        prompt = "Pick a window: ",
+                        format_label = winpick.defaults.format_label,
                     })
 
                     print(selected_win)

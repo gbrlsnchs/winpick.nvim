@@ -16,27 +16,15 @@ Basically, it shows visual cues with labels assigned to them. Meanwhile, it also
 with a label. Once the user presses the respective key to a label, the function returns the selected
 window's ID and its corresponding buffer ID, or just `nil` if no window is selected.
 
-## API
-### Setup
+## Setup
 Here an example with all default options:
 ```lua
 winpick.setup({
 	border = "double",
-	filter = default_filter, -- filters preview window and quickfix
+	filter = winpick.defaults.filter, -- filters preview window and quickfix
 	prompt = "Pick a window: ",
-	format_label = default_label_formatter, -- formatted as "<label>: <buffer name>"
+	format_label = winpick.defaults.format_label, -- formatted as "<label>: <buffer name>"
 })
-```
-
-### Select a window
-```lua
-local winid, bufnr = winpick.select()
-
--- Focus the selected window.
-if winid then
-	vim.api.nvim_set_current_win(selected_win)
-	print(bufnr)
-end
 ```
 
 ## Options
