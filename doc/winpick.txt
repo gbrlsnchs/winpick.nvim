@@ -33,8 +33,6 @@ setup({opts})                                                    *winpick.setup*
                         prompt = "Pick a window: ",
                         format_label = winpick.defaults.format_label,
                     })
-
-                    print(selected_win)
 <
                 Parameters:~
                     {opts}        (table) Options to set global options for
@@ -49,7 +47,7 @@ select({opts})                                                 *winpick.select*
 
                     -- Focus the selected window and print its buffer ID.
                     if winid then
-                        vim.api.nvim_set_current_win(selected_win)
+                        vim.api.nvim_set_current_win(winid)
                         print(bufnr)
                     end
 <
