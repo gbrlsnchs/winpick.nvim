@@ -73,6 +73,8 @@ OPTIONS                                                        *winpick-options*
     corresponding ID and buffer ID and returns whether that window is eligible
     for being picked. Defaults to ignoring |preview-window| and |quickfix|.
 
+    • prompt (string) Prompt message when cues are visible.
+
     • format_label (function) Function that formats the labels for visual
     cues. It receives the target window ID as first parameter and the
     corresponding label for the visual cue (A, B, C, etc). Defaults to

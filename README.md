@@ -28,16 +28,14 @@ winpick.setup({
 ```
 
 ## Options
+| Name           | Type     | Description                                                                                                                                                          | Default                                       |
+|----------------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------|
+| `border`       | string   | Style of visual cues' borders.                                                                                                                                       | `"double"`                                    |
+| `filter`       | function | Predicate function that receives a target window's corresponding ID and buffer ID and returns whether that window is eligible for being picked.                      | Filters preview window and quickfix.          |
+| `prompt`       | string   | Prompt message when cues are visible.                                                                                                                                | `"Pick a window: "`                           |
+| `format_label` | function | Function that formats the labels for visual cues. It receives the target window ID as first parameter and the corresponding label for the visual cue (A, B, C, etc). | Prints the label and the buffer name, if any. |
 
-- `border` (string) Style of visual cues' borders. Defaults to `double`.
-- `filter` (function) Predicate function that receives a target window's corresponding ID and buffer
-  ID and returns whether that window is eligible for being picked. Defaults to ignoring preview
-  window and quickfix.
-- `format_label` (function) Function that formats the labels for visual cues. It receives the target
-  window ID as first parameter and the corresponding label for the visual cue (A, B, C, etc).
-  Defaults to printing the respective label and the buffer name, if any.
-
-## Some example ideas
+## Some examples
 <details>
 <summary>Moving to a window</summary>
 
