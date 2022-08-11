@@ -43,9 +43,19 @@ function M.select(opts)
 	end
 
 	local targets = {}
+	local chars = internal.resolve_chars(opts.chars or {})
+	local total_chars = #chars
+
+	if #eligible_wins > total_chars then
+		vim.notify(
+			"[winpick.nvim] The number of eligible windows is greater than the number of label characters, some windows will never be picked",
+			vim.log.levels.WARN
+		)
+	end
 
 	for idx, win in ipairs(eligible_wins) do
-		targets[internal.format_index(idx)] = win
+		local next_char = chars[idx % (total_chars + 1)]
+		targets[next_char] = win
 	end
 
 	local cues = internal.show_cues(targets, opts)

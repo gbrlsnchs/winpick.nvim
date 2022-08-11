@@ -1,5 +1,14 @@
 local api = vim.api
 
+local alphabet = {}
+for byte = string.byte("A"), string.byte("Z") do
+	table.insert(alphabet, string.char(byte))
+end
+
+for byte = string.byte("0"), string.byte("9") do
+	table.insert(alphabet, string.char(byte))
+end
+
 --- Shows label and buffer name, if available. Else, show only the label.
 --- @param label string: Label to be shown alongside the buffer name.
 --- @param _ number: ID of the selected window.
@@ -41,6 +50,7 @@ function M.defaults()
 		filter = default_filter,
 		prompt = "Pick a window: ",
 		format_label = default_label_formatter,
+		chars = nil,
 	}
 end
 
@@ -49,6 +59,31 @@ end
 --- @return string: The respective ASCII character.
 function M.format_index(idx)
 	return string.char(idx + 64)
+end
+
+--- Returns the list of labels that will sequentially be used for visual cues.
+--- @param custom_chars table: List of characters that will serve as labels.
+--- @return table: Alphabet containing user-provided characters plus a complementary alphabet.
+function M.resolve_chars(custom_chars)
+	if vim.tbl_isempty(custom_chars) then
+		return alphabet
+	end
+
+	local chars = {}
+	local added = {}
+
+	for _, charlist in ipairs({ custom_chars, alphabet }) do
+		for _, char in ipairs(charlist) do
+			local val = char:upper()
+
+			if not added[val] then
+				added[val] = true
+				table.insert(chars, val)
+			end
+		end
+	end
+
+	return chars
 end
 
 --- Shows visual cues for each window.

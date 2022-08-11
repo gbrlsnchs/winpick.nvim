@@ -77,3 +77,8 @@ OPTIONS                                                        *winpick-options*
     cues. It receives the target window ID as first parameter and the
     corresponding label for the visual cue (A, B, C, etc). Defaults to
     printing the respective label and the buffer name, if any.
+
+    • chars (table) List containing `n` characters that will be used for labels
+    in the first `n` visual cues opened. For a number of windows greater than
+    `n`, complementary characters will be additionally used. Defaults to `nil`,
+    and a default alphabet is used.

@@ -6,7 +6,11 @@
 
 Plugin that helps with picking windows.
 
-# Usage
+## Installation
+Use whichever plugin management practices you prefer. Personally I like Neovim's built-in plugin
+management system (`:help packages`) combined with Git submodules, but that choice is up to you!
+
+## Usage
 
 > Note: use `:help winpick.txt` for a Vim friendly documentation.
 
@@ -24,16 +28,31 @@ winpick.setup({
 	filter = winpick.defaults.filter, -- filters preview window and quickfix
 	prompt = "Pick a window: ",
 	format_label = winpick.defaults.format_label, -- formatted as "<label>: <buffer name>"
+	chars = nil,
 })
 ```
 
 ## Options
-| Name           | Type     | Description                                                                                                                                                          | Default                                       |
-|----------------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------|
-| `border`       | string   | Style of visual cues' borders.                                                                                                                                       | `"double"`                                    |
-| `filter`       | function | Predicate function that receives a target window's corresponding ID and buffer ID and returns whether that window is eligible for being picked.                      | Filters preview window and quickfix.          |
-| `prompt`       | string   | Prompt message when cues are visible.                                                                                                                                | `"Pick a window: "`                           |
-| `format_label` | function | Function that formats the labels for visual cues. It receives the target window ID as first parameter and the corresponding label for the visual cue (A, B, C, etc). | Prints the label and the buffer name, if any. |
+From `:help winpick-options`:
+```vimhelp
+• border (string) Style of visual cues' borders. Defaults to `double`.
+
+• filter (function) Predicate function that receives a target window's
+corresponding ID and buffer ID and returns whether that window is eligible
+for being picked. Defaults to ignoring |preview-window| and |quickfix|.
+
+• prompt (string) Prompt message when cues are visible.
+
+• format_label (function) Function that formats the labels for visual
+cues. It receives the target window ID as first parameter and the
+corresponding label for the visual cue (A, B, C, etc). Defaults to
+printing the respective label and the buffer name, if any.
+
+• chars (table) List containing `n` characters that will be used for labels
+in the first `n` visual cues opened. For a number of windows greater than
+`n`, complementary characters will be additionally used. Defaults to `nil`,
+and a default alphabet is used.
+```
 
 ## Some examples
 <details>
