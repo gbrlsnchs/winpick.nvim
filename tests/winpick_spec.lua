@@ -62,7 +62,7 @@ describe("winpick API", function()
 	end)
 
 	describe("window and buffer filters", function()
-		it("should not consider quickfix by default", function()
+		it("should take quickfix into account", function()
 			internal.show_cues.returns({ 1, 2 })
 			vim.fn.getchar.returns(string.byte("A"))
 
@@ -70,6 +70,7 @@ describe("winpick API", function()
 			vim.cmd("wincmd v")
 			local bufnr2 = api.nvim_get_current_buf()
 			vim.cmd("botright copen")
+			local bufnr3 = api.nvim_get_current_buf()
 			vim.cmd("wincmd w") -- returns to first window
 
 			local open_wins = api.nvim_tabpage_list_wins(0)
@@ -79,13 +80,14 @@ describe("winpick API", function()
 			assert.stub(internal.show_cues).was_called_with({
 				A = { id = open_wins[1], bufnr = bufnr1 },
 				B = { id = open_wins[2], bufnr = bufnr2 },
+				C = { id = open_wins[3], bufnr = bufnr3 },
 			}, internal.defaults())
 			assert.stub(internal.hide_cues).was_called_with({ 1, 2 })
 			assert.equals(api.nvim_get_current_win(), winid)
 			assert.equals(api.nvim_get_current_buf(), bufnr)
 		end)
 
-		it("should not consider preview window by default", function()
+		it("should take preview window into account", function()
 			internal.show_cues.returns({ 1, 2 })
 			vim.fn.getchar.returns(string.byte("A"))
 
@@ -95,6 +97,7 @@ describe("winpick API", function()
 			local bufnr2 = api.nvim_get_current_buf()
 			vim.cmd("wincmd v")
 			api.nvim_win_set_option(api.nvim_get_current_win(), "previewwindow", true)
+			local bufnr3 = api.nvim_get_current_buf()
 			vim.cmd("wincmd w")
 
 			local open_wins = api.nvim_tabpage_list_wins(0)
@@ -104,6 +107,7 @@ describe("winpick API", function()
 			assert.stub(internal.show_cues).was_called_with({
 				A = { id = open_wins[1], bufnr = bufnr1 },
 				B = { id = open_wins[2], bufnr = bufnr2 },
+				C = { id = open_wins[3], bufnr = bufnr3 },
 			}, internal.defaults())
 			assert.stub(internal.hide_cues).was_called_with({ 1, 2 })
 			assert.equals(api.nvim_get_current_win(), winid)

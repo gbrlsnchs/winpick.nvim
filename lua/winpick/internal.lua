@@ -24,22 +24,6 @@ local function default_label_formatter(label, _, bufnr)
 	return string.format("%s: %s", label, vim.fn.fnamemodify(buf_name, ":~:."))
 end
 
---- Default filter that ignores preview windows and quickfix buffers.
---- @param winid number: ID of the window to be checked.
---- @param bufnr number: ID of the buffer within the window to be checked.
---- @return boolean: Whether the window is valid for being picked.
-local function default_filter(winid, bufnr)
-	if api.nvim_win_get_option(winid, "previewwindow") then
-		return false
-	end
-
-	if api.nvim_buf_get_option(bufnr, "buftype") == "quickfix" then
-		return false
-	end
-
-	return true
-end
-
 local M = {}
 
 --- Builds the default options.
@@ -47,7 +31,7 @@ local M = {}
 function M.defaults()
 	return {
 		border = "double",
-		filter = default_filter,
+		filter = nil,
 		prompt = "Pick a window: ",
 		format_label = default_label_formatter,
 		chars = nil,

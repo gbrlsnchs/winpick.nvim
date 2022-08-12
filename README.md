@@ -25,7 +25,7 @@ Here an example with all default options:
 ```lua
 winpick.setup({
 	border = "double",
-	filter = winpick.defaults.filter, -- filters preview window and quickfix
+	filter = nil, -- doesn't ignore any window by default
 	prompt = "Pick a window: ",
 	format_label = winpick.defaults.format_label, -- formatted as "<label>: <buffer name>"
 	chars = nil,
@@ -39,7 +39,7 @@ From `:help winpick-options`:
 
 • filter (function) Predicate function that receives a target window's
 corresponding ID and buffer ID and returns whether that window is eligible
-for being picked. Defaults to ignoring |preview-window| and |quickfix|.
+for being picked. Defaults to `nil`, thus not ignoring any window.
 
 • prompt (string) Prompt message when cues are visible.
 

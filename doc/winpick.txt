@@ -29,7 +29,7 @@ setup({opts})                                                    *winpick.setup*
 
                     winpick.setup({
                         border = "double",
-                        filter = winpick.defaults.filter,
+                        filter = nil,
                         prompt = "Pick a window: ",
                         format_label = winpick.defaults.format_label,
                     })
@@ -69,7 +69,7 @@ OPTIONS                                                        *winpick-options*
 
     • filter (function) Predicate function that receives a target window's
     corresponding ID and buffer ID and returns whether that window is eligible
-    for being picked. Defaults to ignoring |preview-window| and |quickfix|.
+    for being picked. Defaults to `nil`, thus not ignoring any window.
 
     • prompt (string) Prompt message when cues are visible.
 
