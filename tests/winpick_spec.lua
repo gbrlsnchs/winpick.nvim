@@ -113,6 +113,32 @@ describe("winpick API", function()
 			assert.equals(api.nvim_get_current_win(), winid)
 			assert.equals(api.nvim_get_current_buf(), bufnr)
 		end)
+
+		it("should pass down the default filter to secondary filters", function()
+			local default_filter_stub = stub()
+			default_filter_stub.returns(true)
+
+			internal.show_cues.returns({ 1, 2 })
+			vim.fn.getchar.returns(string.byte("A"))
+
+			stub(api, "nvim_tabpage_list_wins")
+			api.nvim_tabpage_list_wins.returns({ 0xC0FFEE, 999 })
+
+			stub(api, "nvim_win_get_buf")
+			api.nvim_win_get_buf.returns(0xDEC0DE)
+
+			winpick.setup({ filter = default_filter_stub })
+			winpick.select({
+				filter = function(winid, bufnr, default_filter)
+					return default_filter(winid, bufnr)
+				end,
+			})
+
+			assert.stub(default_filter_stub).was_called_with(0xC0FFEE, 0xDEC0DE)
+
+			api.nvim_tabpage_list_wins:clear()
+			api.nvim_win_get_buf:clear()
+		end)
 	end)
 
 	describe("defaults helper", function()

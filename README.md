@@ -73,12 +73,12 @@ end
 
 ```lua
 local winid, bufnr = winpick.select({
-	filter = function(winid, bufnr)
+	filter = function(winid, bufnr, default_filter)
 		if vim.api.nvim_buf_get_option(bufnr, "buftype") == "terminal" then
 			return false
 		end
 
-		return winpick.defaults.filter(winid, bufnr)
+		return default_filter(winid, bufnr)
 	end,
 })
 
