@@ -78,7 +78,12 @@ function M.select(opts)
 	choice = string.char(choice):upper()
 
 	local win = targets[choice]
-	return win.id, win.bufnr
+
+	if win then
+		return win.id, win.bufnr
+	end
+
+	return nil, nil
 end
 
 --- Sets up the plug-in by overriding default options.

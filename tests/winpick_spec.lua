@@ -59,6 +59,27 @@ describe("winpick API", function()
 			assert.equals(api.nvim_get_current_win(), winid)
 			assert.equals(api.nvim_get_current_buf(), bufnr)
 		end)
+
+		it("should not error when answering with unlisted char", function()
+			internal.show_cues.returns({ 1, 2 })
+			vim.fn.getchar.returns(string.byte("C"))
+
+			local bufnr1 = api.nvim_get_current_buf()
+			vim.cmd("wincmd v")
+			local bufnr2 = api.nvim_get_current_buf()
+
+			local open_wins = api.nvim_tabpage_list_wins(0)
+			local winid, bufnr = winpick.select()
+
+			assert.stub(vim.fn.getchar).was_called()
+			assert.stub(internal.show_cues).was_called_with({
+				A = { id = open_wins[1], bufnr = bufnr1 },
+				B = { id = open_wins[2], bufnr = bufnr2 },
+			}, internal.defaults())
+			assert.stub(internal.hide_cues).was_called_with({ 1, 2 })
+			assert.is_nil(winid)
+			assert.is_nil(bufnr)
+		end)
 	end)
 
 	describe("window and buffer filters", function()
