@@ -1,6 +1,7 @@
-# winpick
+# winpick.nvim
 
-[![Codeberg CI](https://ci.codeberg.org/api/badges/gbrlsnchs/winpick.nvim/status.svg)](https://codeberg.org/gbrlsnchs/winpick.nvim/commits/branch/trunk)
+[![winpick.nvim
+CI](https://github.com/gbrlsnchs/winpick.nvim/actions/workflows/ci.yml/badge.svg)](https://github.com/gbrlsnchs/winpick.nvim/actions/workflows/ci.yml)
 
 ![Example of how winpick works](https://i.imgur.com/4xACRUJ.png)
 
