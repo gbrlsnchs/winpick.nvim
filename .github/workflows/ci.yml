@@ -1,42 +1,36 @@
-name: winpick.nvim CI
+name: unit tests
 
 on:
   push:
-    branches: [$default-branch]
-    paths:
-      - .github/workflow/ci.yml
-      - lua/**
-      - scripts/test.sh
-      - tests/**
+    branches: [trunk]
   pull_request:
-    branches: [$default-branch]
-    paths:
-      - .github/workflow/ci.yml
-      - lua/**
-      - scripts/test.sh
-      - tests/**
+    branches: [trunk]
 
 jobs:
   test:
-    runs-on: debian
+    runs-on: ubuntu-22.04
+    container: alpine:3.16
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Update repository index
-        run: apt update --yes
+      - name: Add extra repositories
+        run: echo "@edge2 https://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
+
+      - name: Add custom repositories
+        run: echo "@custom2 https://aports.gsr.dev/repositories/testing" >> /etc/apk/repositories
+
+      - name: Install key for custom repository
+        run: apk add --allow-untrusted my-aports-key@custom2
+
+      - name: Update repository indexes
+        run: apk update
 
       - name: Install system dependencies
-        run: apt install --yes curl git
-
-      - name: Download Neovim's nightly build
-        run: curl --location https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.deb --output ../nvim.deb
+        run: apk add curl git stylua@edge2 neovim@custom2
 
       - name: Install plenary.nvim (for running the tests)
         run: git clone https://github.com/nvim-lua/plenary.nvim ../plenary.nvim
-
-      - name: Install Neovim
-        run: apt install ../nvim.deb
 
       - name: Run test script
         run: ./scripts/test.sh
