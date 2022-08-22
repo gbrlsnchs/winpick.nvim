@@ -1,0 +1,42 @@
+name: winpick.nvim CI
+
+on:
+  push:
+    branches: [$default-branch]
+    paths:
+      - .github/workflow/ci.yml
+      - lua/**
+      - scripts/test.sh
+      - tests/**
+  pull_request:
+    branches: [$default-branch]
+    paths:
+      - .github/workflow/ci.yml
+      - lua/**
+      - scripts/test.sh
+      - tests/**
+
+jobs:
+  test:
+    runs-on: debian
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Update repository index
+        run: apt update --yes
+
+      - name: Install system dependencies
+        run: apt install --yes curl git
+
+      - name: Download Neovim's nightly build
+        run: curl --location https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.deb --output ../nvim.deb
+
+      - name: Install plenary.nvim (for running the tests)
+        run: git clone https://github.com/nvim-lua/plenary.nvim ../plenary.nvim
+
+      - name: Install Neovim
+        run: apt install ../nvim.deb
+
+      - name: Run test script
+        run: ./scripts/test.sh
